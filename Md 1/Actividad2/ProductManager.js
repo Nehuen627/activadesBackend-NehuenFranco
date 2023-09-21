@@ -1,24 +1,37 @@
 const fs = require('fs');
+const fsp = require('fs').promises;
 
-const readDocument = (path) => {
-    if(fs.existsSync(path)){
-        let content = fs.readFileSync(path, 'utf-8');
-        if (!content) {
+const readDocument = async (path) => {
+    try {
+        if (fs.existsSync(path)) {
+            let content = await fsp.readFile(path, 'utf-8');
+            if (!content) {
+                return [];
+            }
+            return JSON.parse(content);
+        } else {
+            console.error("no hay archivo al cual leer");
             return [];
         }
-        return JSON.parse(content);
-    } else {
-        console.error("no hay archivo al cual leer")
+    } catch (error) {
+        console.error(`Error reading document: ${error.message}`);
     }
-}
+    return [];
+};
 class ProductManager{
     constructor(path) {
         this.path = path;
         this.nextId = 1;
+        this.init();
+    }
+    async init() {
+        if (!fs.existsSync(this.path)) {
+            await fsp.writeFile(this.path, JSON.stringify([]));
+        }
     }
 
-    addProduct(product) {
-        let arrayProducts = readDocument(this.path);
+    async addProduct(product) {
+        let arrayProducts = await readDocument(this.path);
         if (arrayProducts.some(existingProduct => existingProduct.code === product.code)) {
             console.error("The product is already added");
             return;
@@ -39,15 +52,15 @@ class ProductManager{
         };
 
         arrayProducts.push(newProduct);
-        fs.writeFileSync(this.path, JSON.stringify(arrayProducts));
+        await fsp.writeFile(this.path, JSON.stringify(arrayProducts));
     }
 
-    getProducts() {
-        let products = readDocument(this.path);
+    async getProducts() {
+        let products = await readDocument(this.path);
         return products;
     }
-    getProductById(id) {
-        let arrayProducts = readDocument(this.path);
+    async getProductById(id) {
+        let arrayProducts = await readDocument(this.path);
         const product = arrayProducts.find(product => product.id === id);
         
         if (!product) {
@@ -57,8 +70,8 @@ class ProductManager{
         
         return product;
     }
-    updateProduct(id, updatedProduct) {
-        let arrayProducts = readDocument(this.path);
+    async updateProduct(id, updatedProduct) {
+        let arrayProducts = await readDocument(this.path);
         const index = arrayProducts.findIndex(product => product.id === id);
 
         if (index === -1) {
@@ -67,11 +80,11 @@ class ProductManager{
         }
 
         arrayProducts[index] = { ...arrayProducts[index], ...updatedProduct, id: id }
-        fs.writeFileSync(this.path, JSON.stringify(arrayProducts));
+        await fsp.writeFile(this.path, JSON.stringify(arrayProducts));
 
     }
-    deleteProduct(id) {
-        let arrayProducts = readDocument(this.path);
+    async deleteProduct(id) {
+        let arrayProducts = await readDocument(this.path);
         const index = arrayProducts.findIndex(product => product.id === id);
 
         if (index === -1) {
@@ -80,7 +93,7 @@ class ProductManager{
         }
         
         arrayProducts.splice(index, 1)
-        fs.writeFileSync(this.path, JSON.stringify(arrayProducts));
+        await fsp.writeFile(this.path, JSON.stringify(arrayProducts));
     }
 }
 
