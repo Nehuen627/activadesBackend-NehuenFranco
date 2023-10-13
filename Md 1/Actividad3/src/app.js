@@ -39,7 +39,7 @@ app.get('/products', async (req, res) => {
             const productsObj = {
                 products: products
             }
-            res.send(productsObj);
+            res.status(200).send(productsObj);
         }
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -61,7 +61,7 @@ app.get('/products/:pid', async (req, res) => {
             const productsObj = {
                 product: "no existe el producto con esa id"
             }
-            res.send(productsObj);
+            res.status(200).send(productsObj);
         }
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -71,5 +71,6 @@ app.get('/products/:pid', async (req, res) => {
 app.listen(8080,()=>{
     console.log('Servidor escuchando desde el puerto 8080');
 });
+
 
 startAsync();
