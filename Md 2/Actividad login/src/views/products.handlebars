@@ -1,0 +1,28 @@
+<div>
+    <h2>Welcome to the eccomerce {{user.lastName}} {{user.firstName}}!</h2>
+    <h3>Mail: {{user.email}}, Age: {{user.age}}, Rol: {{user.rol}}</h3>
+</div>
+<div>
+    <h2>Product List</h2>
+    <ul>
+        {{#each products}}
+            <li>
+                <a href="/api/products/{{_id}}"><h4>{{title}}</h4></a>
+                <form action="/api/carts/653d93937f9bb56f041835cc/product/{{_id}}" method="POST">
+                    <button type="submit">Add to cart</button>
+                </form>
+            </li>
+        {{/each}}
+    </ul>
+    {{#if totalPages}}
+        <div class="pagination">
+            {{#if prevLink}}
+                <a href="{{prevLink}}">Previous</a>
+            {{/if}}
+
+            {{#if nextLink}}
+                <a href="{{nextLink}}">Next</a>
+            {{/if}}
+        </div>
+    {{/if}}
+</div>
