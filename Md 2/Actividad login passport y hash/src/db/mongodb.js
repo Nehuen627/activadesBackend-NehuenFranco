@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export const URI = 'mongodb+srv://developer:18JhiKOtwG5MqtTP@cluster0.k1ea6t4.mongodb.net/';
+export const URI = process.env.URI;
 
 export const init = async () => {
     try {

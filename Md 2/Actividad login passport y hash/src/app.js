@@ -9,12 +9,16 @@ import indexRouter from "./routers/index.router.js"
 import sessionsRouter from "./routers/sessions.router.js"
 import passport from 'passport';
 import { init as initPassportConfig } from './config/passport.config.js';
+import dotenv from 'dotenv';
+
 
 const app = express();
 
-const sessionSecret = "zIi3Fh1uBl2oCi5YqN2Ep5Y8iQZUMNQG"
+dotenv.config();
+
+
 app.use(expressSession({
-    secret: sessionSecret,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({

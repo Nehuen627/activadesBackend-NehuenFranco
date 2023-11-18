@@ -5,14 +5,15 @@ import UsersManager from '../dao/UsersManager.js';
 import { Exception } from '../utils.js';
 import userModel from "../dao/models/user.model.js";
 
+
 const opts = {
     usernameField: 'email',
     passReqToCallback: true,
 };
 
 const githubOpts = {
-    clientID: 'Iv1.db08b33f0c94d626', 
-    clientSecret: 'eb26b347ab6876244b66ea77dc2e69cae149883d',
+    clientID: process.env.CLIENT_ID, 
+    clientSecret: process.env.CLIENT_SECRET,
     callbackURL: "http://localhost:8080/auth/sessions/github-callback", 
 };
 
@@ -35,14 +36,16 @@ export const init = () => {
     }));
     passport.use('login', new LocalStrategy(opts, async (req, email, password, done) => {
         try {
-            if(email === "adminCoder@coder.com" && password === "adminCod3r123"){
+            const emailAdmin = process.env.ADMIN_EMAIL
+            const passwordAdmin = process.env.ADMIN_PASSWORD
+            if(email === emailAdmin && password === passwordAdmin){
                 const user = {
                     _id: "admin",
                     firstName: "Admin",
                     lastName: "Coder",
                     rol: "Admin",
                     age: "AdminAge",
-                    email: "adminCoder@coder.com"
+                    email: email
                 }
                 done(null, user);
             } else {
