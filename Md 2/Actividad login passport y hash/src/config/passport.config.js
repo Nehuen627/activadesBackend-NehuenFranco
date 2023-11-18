@@ -11,12 +11,6 @@ const opts = {
     passReqToCallback: true,
 };
 
-const githubOpts = {
-    clientID: process.env.CLIENT_ID, 
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/auth/sessions/github-callback", 
-};
-
 
 export const init = () => {
     passport.use('register', new LocalStrategy(opts, async (req, email, password, done) => {
@@ -62,7 +56,11 @@ export const init = () => {
         }
     }));
 
-    passport.use('github', new GithubStrategy(githubOpts, async (accessToken, refreshToken, profile, done) => {
+    passport.use('github', new GithubStrategy({
+        clientID: process.env.CLIENT_ID, 
+        clientSecret: process.env.CLIENT_SECRET,
+        callbackURL: "http://localhost:8080/auth/sessions/github-callback", 
+    }, async (accessToken, refreshToken, profile, done) => {
         try {
             const email = profile._json.email;
             console.log("GitHub Profile:", profile);

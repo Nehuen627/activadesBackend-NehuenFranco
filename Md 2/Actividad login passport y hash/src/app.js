@@ -4,7 +4,6 @@ import MongoStore from 'connect-mongo';
 import path from "path"
 import exphbs from 'express-handlebars';
 import { __dirname } from './utils.js';
-import { URI } from "./db/mongodb.js"
 import indexRouter from "./routers/index.router.js"
 import sessionsRouter from "./routers/sessions.router.js"
 import passport from 'passport';
@@ -22,7 +21,7 @@ app.use(expressSession({
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-        mongoUrl: URI,
+        mongoUrl: process.env.URI,
         mongoOptions: {},
         ttl: 120,
     }), 
