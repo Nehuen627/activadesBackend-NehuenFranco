@@ -63,10 +63,27 @@ export const init = () => {
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             const email = profile._json.email;
-            console.log("GitHub Profile:", profile);
+            const githubId = profile.id;
 
             if (!email) {
-                return done(new Exception("GitHub profile email not available"), null);
+                const userWithGithubId = await UsersManager.findUserByGithubId(githubId);
+
+                if (userWithGithubId) {
+                    return done(null, userWithGithubId);
+                }
+    
+                const data = {
+                    firstName: profile._json.name,
+                    lastName: '',
+                    email: null,
+                    age: '',
+                    password: '',
+                    provider: 'Github',
+                    githubId: githubId, 
+                };
+    
+                const newUser = await UsersManager.addGithubUser(data);
+                return done(null, newUser);
             }
     
             let user = await UsersManager.findEmail(email);
@@ -95,6 +112,7 @@ export const init = () => {
         done(null, user._id);
     });
     
+    
     passport.deserializeUser(async (id, done) => {
         if (id === "admin") {
             const adminUser = {
@@ -111,7 +129,8 @@ export const init = () => {
         try {
             const user = await userModel.findById(id);
             done(null, user);
-        } catch (error) {
+        } 
+        catch (error) {
             done(error, null);
         }
     });

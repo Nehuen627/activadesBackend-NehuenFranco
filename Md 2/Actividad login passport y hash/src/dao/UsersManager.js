@@ -34,4 +34,40 @@ export default class {
             return user;
         }
     }
+    static async updateData(dataToUpdate, data, uid) {
+        try {
+            let user = await userModel.findById(uid);
+    
+            if (dataToUpdate === "email") {    
+                const existingUser = await userModel.findOne({ email: data });
+    
+                if (existingUser && existingUser._id.toString() !== uid) {
+                    throw new Exception("The email cannot be used");
+                }
+    
+                user.email = data;
+                await user.save();    
+                return user;
+            } else if (dataToUpdate === "password") {
+                const saltRounds = 10;
+                data = await bcrypt.hash(data, saltRounds);
+                user.password = data;
+                await user.save();    
+                return user;
+            }
+        } catch (error) {
+            console.error("Error updating data:", error);
+            throw error; 
+        }
+    }
+    
+    static async findUserByGithubId (gitId) {
+        const user = await userModel.findOne({githubId : gitId})
+        if(!user) {
+            return null;
+        }
+        else{
+            return user;
+        }
+        }
 }
